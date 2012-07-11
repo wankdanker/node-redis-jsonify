@@ -21,9 +21,11 @@ client.set(key, val, function (err ,data) {
 		client.quit(function () {
 			if (success) {
 				console.error("Success.");
+				process.exit(0);
 			}
 			else {
 				console.error("Fail.");
+				process.exit(1);
 			}
 		});
 	});
