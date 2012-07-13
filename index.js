@@ -3,19 +3,21 @@ module.exports = RedisJSONify;
 RedisJSONify.blacklist = ["info"];
 
 function RedisJSONify (redis) {
+	var lastArgType;
+	
     //save a reference to the real send_command method
     redis.__send_command__ = redis.send_command;
 
     //define the send_command proxy method
     redis.send_command = function (command, args, callback) {
-        //don't do json stuff on blacklisted commands
+        //don't do json stuff on blacklisted commands or if we are not ready yet
         if (!this.ready || ~RedisJSONify.blacklist.indexOf(command)) {
             return redis.__send_command__.apply(redis, arguments);
         }
 
         if (!callback) {
-            last_arg_type = typeof args[args.length - 1];
-            if (last_arg_type === "function" || last_arg_type === "undefined") {
+            lastArgType = typeof args[args.length - 1];
+            if (lastArgType === "function" || lastArgType === "undefined") {
                 callback = args.pop();
             }
         }
@@ -49,7 +51,7 @@ function RedisJSONify (redis) {
                 }
             }
 
-            return callback(err, result);
+            return callback && callback(err, result);
         });
     };
 
