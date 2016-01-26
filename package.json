@@ -9,7 +9,8 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "redis": "0.7.2"
+    "redis": "0.7.2",
+    "tape": "^4.4.0"
   },
   "optionalDependencies": {},
   "engines": {
