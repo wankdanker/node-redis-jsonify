@@ -2,9 +2,11 @@ module.exports = RedisJSONify;
 
 RedisJSONify.blacklist = ["info"];
 
-function RedisJSONify (redis) {
+function RedisJSONify (redis, opts) {
     var lastArgType;
     
+    opts = opts || {};
+
     //save a reference to the real send_command method
     redis.__send_command__ = redis.send_command;
 
@@ -24,8 +26,12 @@ function RedisJSONify (redis) {
 
         //loop through each arg converting to JSON if possible
         args.forEach(function (arg, ix) {
+            //only stringify the key if that has been requested
+            if (ix === 0 && !opts.jsonKey) {
+		//don't do anything: args[ix] = arg;
+            }
             //make sure the arg is not a buffer
-            if (!(arg instanceof Buffer)) {
+            else if (!(arg instanceof Buffer)) {
                 args[ix] = JSON.stringify(arg);
             }
         });
