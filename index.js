@@ -3,8 +3,8 @@ module.exports = RedisJSONify;
 RedisJSONify.blacklist = ["info"];
 
 function RedisJSONify (redis) {
-	var lastArgType;
-	
+    var lastArgType;
+    
     //save a reference to the real send_command method
     redis.__send_command__ = redis.send_command;
 
