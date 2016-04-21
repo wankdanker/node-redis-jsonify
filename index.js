@@ -8,13 +8,13 @@ function RedisJSONify (redis, opts) {
     opts = opts || {};
 
     //save a reference to the real send_command method
-    redis.__send_command__ = redis.send_command;
+    var send_command = redis.internal_send_command || redis.send_command;
 
     //define the send_command proxy method
-    redis.send_command = function (command, args, callback) {
+    redis.internal_send_command = redis.send_command = function (command, args, callback) {
         //don't do json stuff on blacklisted commands or if we are not ready yet
         if (!this.ready || ~RedisJSONify.blacklist.indexOf(command)) {
-            return redis.__send_command__.apply(redis, arguments);
+            return send_command.apply(redis, arguments);
         }
 
         if (!callback) {
@@ -37,7 +37,7 @@ function RedisJSONify (redis, opts) {
         });
 
         //call the real send_command method
-        redis.__send_command__(command, args, function (err, result) {
+        send_command.call(redis, command, args, function (err, result) {
             if (Array.isArray(result)) {
                 //loop through each array element
                 result.forEach(function (value, ix) {
