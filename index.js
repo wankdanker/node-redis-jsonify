@@ -4,17 +4,32 @@ RedisJSONify.blacklist = ["info"];
 
 function RedisJSONify (redis, opts) {
     var lastArgType;
-    
+
     opts = opts || {};
 
     //save a reference to the real send_command method
     var send_command = redis.internal_send_command || redis.send_command;
 
     //define the send_command proxy method
-    redis.internal_send_command = redis.send_command = function (command, args, callback) {
+    redis.internal_send_command = redis.send_command = function () {
+        if (arguments.length > 1) {
+            var command = arguments[0];
+            var args = arguments[1];
+            var callback = arguments[2];
+            var invokeWithObj = false;
+        }
+        else {
+            var command = arguments[0].command;
+            var args = arguments[0].args;
+            var callback = arguments[0].callback;
+            var invokeWithObj = true;
+        }
+
         //don't do json stuff on blacklisted commands or if we are not ready yet
         if (!this.ready || ~RedisJSONify.blacklist.indexOf(command)) {
-            return send_command.apply(redis, arguments);
+            return send_command.apply(redis, invokeWithObj
+                ? [{command: command, args: args, callback: callback}]
+                : [command, args, callback]);
         }
 
         if (!callback) {
@@ -36,8 +51,7 @@ function RedisJSONify (redis, opts) {
             }
         });
 
-        //call the real send_command method
-        send_command.call(redis, command, args, function (err, result) {
+        var wrappedCallback = function (err, result) {
             if (Array.isArray(result)) {
                 //loop through each array element
                 result.forEach(function (value, ix) {
@@ -58,7 +72,12 @@ function RedisJSONify (redis, opts) {
             }
 
             return callback && callback(err, result);
-        });
+        };
+
+        //call the real send_command method
+        return send_command.apply(redis, invokeWithObj
+            ? [{command: command, args: args, callback: wrappedCallback}]
+            : [command, args, wrappedCallback]);
     };
 
     return redis;
