@@ -12,12 +12,22 @@ function RedisJSONify (redis, opts) {
 
     //define the send_command proxy method
     redis.internal_send_command = redis.send_command = function (command, args, callback) {
+        var objectMode = false;
+        var applyArgs;
+
         //don't do json stuff on blacklisted commands or if we are not ready yet
         if (!this.ready || ~RedisJSONify.blacklist.indexOf(command)) {
             return send_command.apply(redis, arguments);
         }
 
-        if (!callback) {
+        if (typeof command === 'object') {
+            objectMode = true;
+
+            callback = command.callback;
+            args = command.args;
+            command.callback = finish;
+        }
+        else if (!callback) {
             lastArgType = typeof args[args.length - 1];
             if (lastArgType === "function" || lastArgType === "undefined") {
                 callback = args.pop();
@@ -28,7 +38,7 @@ function RedisJSONify (redis, opts) {
         args.forEach(function (arg, ix) {
             //only stringify the key if that has been requested
             if (ix === 0 && !opts.jsonKey) {
-		//don't do anything: args[ix] = arg;
+		        //don't do anything: args[ix] = arg;
             }
             //make sure the arg is not a buffer
             else if (!(arg instanceof Buffer)) {
@@ -36,8 +46,17 @@ function RedisJSONify (redis, opts) {
             }
         });
 
+        if (objectMode) {
+            applyArgs = [command];
+        }
+        else {
+            applyArgs = [command, args, finish];
+        }
+
         //call the real send_command method
-        send_command.call(redis, command, args, function (err, result) {
+        send_command.apply(redis, applyArgs);
+
+        function finish (err, result) {
             if (Array.isArray(result)) {
                 //loop through each array element
                 result.forEach(function (value, ix) {
@@ -58,7 +77,7 @@ function RedisJSONify (redis, opts) {
             }
 
             return callback && callback(err, result);
-        });
+        }
     };
 
     return redis;
