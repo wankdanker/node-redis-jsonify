@@ -2,7 +2,7 @@
   "author": "Dan VerWeire <dverweire@gmail.com>",
   "name": "redis-jsonify",
   "description": "Save JSON representation of objects to redis when using node_redis",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "repository": {
     "type": "git",
     "url": "git://github.com/wankdanker/node-redis-jsonify.git"
