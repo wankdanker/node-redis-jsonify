@@ -21,6 +21,12 @@ from JSON. I considered modifying the RedisClient prototype automatically when
 this module is included in your project, but decided against it because you may
 not want this behavior on all of your redis clients.
 
+compatiablity
+-------------
+
+This module is compatible with most versions of node_redis from 0.6.7 to 2.8.0
+except 2.4.2 and 2.3.1.
+
 install
 ---------
 

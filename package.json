@@ -19,6 +19,20 @@
   },
   "homepage": "https://github.com/wankdanker/node-redis-jsonify",
   "scripts": {
-    "test": "./node_modules/.bin/multidep test/multidep.json && node test/test.js"
-  }
+    "test": "multidep test/multidep.json && node test/test.js"
+  },
+  "bugs": {
+    "url": "https://github.com/wankdanker/node-redis-jsonify/issues"
+  },
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "keywords": [
+    "redis",
+    "json",
+    "automatic",
+    "implicit"
+  ],
+  "license": "MIT"
 }
