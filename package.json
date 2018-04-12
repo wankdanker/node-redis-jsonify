@@ -9,6 +9,7 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "multidep": "^2.0.2",
     "redis": "^2.8.0",
     "tape": "^4.4.0"
   },
@@ -18,6 +19,6 @@
   },
   "homepage": "https://github.com/wankdanker/node-redis-jsonify",
   "scripts": {
-    "test": "node test.js"
+    "test": "./node_modules/.bin/multidep test/multidep.json && node test/test.js"
   }
 }
