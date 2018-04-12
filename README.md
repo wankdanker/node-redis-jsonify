@@ -1,6 +1,8 @@
 node-redis-jsonify
 ==================
 
+[![Build Status](https://travis-ci.org/wankdanker/node-object-to-xml.svg?branch=master)](https://travis-ci.org/wankdanker/node-object-to-xml)
+
 Save JSON representation of objects to redis when using node_redis
 
 why
