@@ -16,7 +16,7 @@ function RedisJSONify (redis, opts) {
         var applyArgs;
 
         //don't do json stuff on blacklisted commands or if we are not ready yet
-        if (!this.ready || ~RedisJSONify.blacklist.indexOf(command)) {
+        if (!this.ready || ~RedisJSONify.blacklist.indexOf(command) || (command && command.command && ~RedisJSONify.blacklist.indexOf(command.command))) {
             return send_command.apply(redis, arguments);
         }
 
